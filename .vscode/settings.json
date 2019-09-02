@@ -59,7 +59,8 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "valarray": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "bitset": "cpp"
     },
     "terminal.integrated.shell.windows": "cmd.exe",
     "C_Cpp.errorSquiggles": "Disabled"

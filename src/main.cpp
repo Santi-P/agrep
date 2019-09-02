@@ -3,8 +3,8 @@
 #include "levenshtein.hpp"
 
 int main() {
-    std::string pattern = "nanaa";
-    std::string text = "aabaacaabacabadsfasdfasdfas;dflkj bananaasdfsdf fuck";
+    std::string pattern = "aabac";
+    std::string text = "aabaacaabacab";
 
 
     std::cout << "AGREP" << std::endl;
@@ -13,5 +13,5 @@ int main() {
     Agrep a; 
     a.search(pattern, text);
 
-
+    a.compile("hello");
 }

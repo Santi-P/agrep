@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <string> 
-
+#include "boost/dynamic_bitset.hpp"
+#include <limits> 
 
 class Agrep{
     public: 
@@ -9,71 +10,124 @@ class Agrep{
         // std::cout<< "constructed class" << std::endl;
     }
 
-    // crappy test version
+
+    void compile(std::string pattern){
+        auto len = pattern.length();
+        boost::dynamic_bitset<> b(len);
+        size_t hi = std::numeric_limits<unsigned char>::max();
+
+        std::vector<boost::dynamic_bitset<>> masks(hi, b ) ;
+
+
+        for (unsigned j = 0; j < len; ++j){ 
+            unsigned char c = pattern[j];
+
+            if (masks[c].any()) continue; 
+
+            boost::dynamic_bitset<> tmp_bs(len);
+
+            for(unsigned k = 0; k < len; ++k){
+                if (c == pattern[k]){
+                    tmp_bs.set(k);
+                }
+            }
+            masks[c] = tmp_bs;
+
+            }
+        compiled_masks = masks;
+    }
+
+
+
     bool search(std::string pattern, std::string text){
-        std::vector<bool> bm = build_mask(pattern.length());
-        bm[0] = 1;
-
-        for( int i = 1 ; i < text.length(); ++i){
-            std::vector<bool> next_bm = build_mask(pattern.length());
-            next_bm[0] = 1;
-            char c = text[i];
-            std::cout<< i <<std::endl;
-
-        for (int j = 1; j < pattern.length(); ++j){
+        compile(pattern);
+        size_t m = pattern.length();
+        boost::dynamic_bitset<> b(m);
         
-                if (bm[j-1] == 1 and pattern[j]==text[i])
-                    {
-                        next_bm[j] = true; 
-                    }
-                else{
-                    next_bm[j] = false;
-                    }
+        b.set(0);
+
+        for(int i = 2; i < text.length() ; ++i){
+            b<<=1; 
+            b.set(0);
+            unsigned char c = text[i];
+            boost::dynamic_bitset<> s_i = compiled_masks[c];
+            b&=s_i; 
+
+            std::cout<< b<<std::endl;
+
+            if( b.test(m-1)){
+                std::cout<<"found at :"<< i - m + 2<<std::endl;
+            }
+        }     
+    }
+
+    // crappy test version
+    // bool search(std::string pattern, std::string text){
+    //     const int m = pattern.length();
+    //     std::bitset<5> bm ;
+        
+    //     bm.set(0);
+
+
+    //     for( int i = 1 ; i < text.length(); ++i){
+    //         std::bitset<5> next_bm;
+    //         char c = text[i];
+    //         if (pattern[0] == c){
+    //             next_bm.set(0);
+    //         }
+
+    //         std::cout<< i <<std::endl;
+
+
+    //     for (int j = 1; j < m; ++j){
+                
+    //             if (bm[j-1] == 1 and pattern[j]==text[i])
+    //                 {
+    //                     next_bm[j] = true; 
+    //                 }
+    //             else{
+    //                 next_bm[j] = false;
+    //                 }
             
 
             
-        }
+    //     }
 
-        if (bm[pattern.length()-1] == true){
-            std::cout<< "FOUND! pattern matches at char " << std::endl;
-            std::cout<< i - pattern.length()-1 + 2 <<std::endl;
-            return 1;
-        }
-
-
-        bm = next_bm;
+    //     if (bm[m-1] == true){
+    //         std::cout<< "FOUND! pattern matches at char " << std::endl;
+    //         std::cout<< i - m -1 + 2 <<std::endl;
+    //         return 1;
+    //     }
 
 
-        for (auto c : pattern){
-            std::cout<< c <<" ";
-            }
-        std::cout<<std::endl;
+    //     bm = next_bm;
 
-        for (auto i : bm){
-            std::cout<< i <<" ";
-            }
+   
+    //     for (auto c : pattern){
+    //         std::cout<< c <<" ";
+    //         }
+    //     std::cout<<std::endl;
 
-
+    //     for (int i = 0 ; i<m ; i++){
+    //         std::cout<< bm[i] <<" ";
+    //         }
 
 
 
-        std::cout<<c;
-        std::cout<<std::endl;
-
-        }
-        std::cout<<std::endl;
-
-        return 0; 
-    }
 
 
+    //     //std::cout<<c;
+    //     std::cout<<std::endl;
 
-    std::vector<bool>  build_mask(unsigned size){ 
-        std::vector<bool> tmp_mask(size, 0); 
-        
-        return tmp_mask;
-    }
+    //     }
+    //     std::cout<<std::endl;
 
-    std::vector<bool> bitmask; 
+    //     return 0; 
+    // }
+
+    std::vector<boost::dynamic_bitset<>> compiled_masks;
+
+
+
 
 };
