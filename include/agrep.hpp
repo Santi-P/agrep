@@ -3,6 +3,7 @@
 #include <string> 
 #include "boost/dynamic_bitset.hpp"
 #include <limits> 
+#include <fstream>
 
 class Agrep{
     public: 
@@ -38,22 +39,59 @@ class Agrep{
     }
 
 
-
-    bool search(std::string pattern, std::string text){
+    bool search_file(std::string pattern, std::string f_name){
         compile(pattern);
         size_t m = pattern.length();
-        boost::dynamic_bitset<> b(m);
+
+
+        std::ifstream file(f_name);
+        std::string text;
+        int line_num = 1;
+
+        while (std::getline(file, text)) {
         
+
+        line_num++;
+        if (text.length() <1) continue; 
+        boost::dynamic_bitset<> b(m);
         b.set(0);
 
-        for(int i = 2; i < text.length() ; ++i){
+
+        for(int i = 0; i < text.length() ; ++i){
+
             b<<=1; 
             b.set(0);
             unsigned char c = text[i];
             boost::dynamic_bitset<> s_i = compiled_masks[c];
             b&=s_i; 
 
-            std::cout<< b<<std::endl;
+            if( b.test(m-1)){
+                std::cout<<"found at :"<< line_num << ":" << i - m + 2<<std::endl;
+                std::cout<<text <<std::endl;
+                }
+            }     
+        }
+
+        return 0;
+    }
+
+
+    bool search(std::string pattern, std::string text){
+        compile(pattern);
+        // fix me 
+        size_t m = pattern.length();
+        boost::dynamic_bitset<> b(m);
+        
+        b.set(0);
+
+        for(int i = 0; i < text.length() ; ++i){
+            b<<=1; 
+            b.set(0);
+            unsigned char c = text[i];
+            boost::dynamic_bitset<> s_i = compiled_masks[c];
+            b&=s_i; 
+
+            //std::cout<< b<<std::endl;
 
             if( b.test(m-1)){
                 std::cout<<"found at :"<< i - m + 2<<std::endl;
