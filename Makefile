@@ -1,5 +1,5 @@
 CXX		  := g++
-CXX_FLAGS := -Wall -Wextra -O3 -std=c++17 -ggdb
+CXX_FLAGS := -Wall -Wextra -O2 -std=c++17 
 
 BIN		:= bin
 SRC		:= src
@@ -18,5 +18,7 @@ run: clean all
 $(BIN)/$(EXECUTABLE): $(SRC)/*.cpp
 	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES)
 
+test: clean all
+	python 
 clean:
 	-rm $(BIN)/*
