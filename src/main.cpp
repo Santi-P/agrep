@@ -4,16 +4,15 @@
 #include "bit_pattern.hpp"
 #include "FSA.hpp"
 #include "FSAWrapper.hpp"
-#include "recursive_descent.hpp"
+//#include "recursive_descent.hpp"
 
 
 typedef FSA<unsigned short int> FSA16;
 
 
 int main(int argc, char** argv) {
-    std::cout<< "HELLO";
 
-    std::string text = "ccccccccfccccc";
+    std::string text = "accccccccfccccc";
 
 // (a|*(bc) causes segfault
 // (|a) segfault
@@ -24,20 +23,24 @@ int main(int argc, char** argv) {
 // look into jumping too much to the end
 // epsilon jumps are not correct
 // modify do concat
-RecDesc parser("a(c)*(d|f)c");
+// RecDesc parser("a(c)*(d|f)c");
 
-for (auto i : parser.tokenized_input){
-    std::cout<< i <<std::endl;
-    }
+// for (auto i : parser.tokenized_input){
+//     std::cout<< i <<std::endl;
+//     }
 
-    auto automat = parser.parse();
-    Agrep a; 
-    a.search_fsa(automat, text);
+//     auto automat = parser.parse();
+//     Agrep a; 
+//     a.search_fsa(automat, text);
 
-
+// two bug left
+// fix tokenization
+// not correct stuff on fuzzy regex
 Agrep b; 
+if (argc > 2){
+b.search_file(argv[1],argv[2], std::stoi(argv[3]),true);
 
-b.search_file("jesus",argv[1]);
+}
 
 
 

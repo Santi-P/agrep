@@ -23,7 +23,7 @@ class RecDesc{
 
     RecDesc(std::string in_string){
         to_parse = in_string;
-        tokenized_input = shitty_tokenize(in_string);
+        tokenized_input = tokenize(in_string);
         len_inp = tokenized_input.size();
     }
 
@@ -54,6 +54,7 @@ class RecDesc{
 
 
     std::vector<std::string> tokenize(std::string s){
+
     unsigned last = 0; 
     std::vector<std::string> res; 
     res.reserve(s.length());
@@ -73,7 +74,7 @@ class RecDesc{
     }
 
     if (last != s.length()){
-        res.push_back(s.substr(last+1,s.length() ));
+        res.push_back(s.substr(last,s.length() ));
         }
     return res; 
     }
