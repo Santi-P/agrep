@@ -14,7 +14,7 @@ namespace po = boost::program_options;
 bool regex = false; 
 unsigned errors = 0; 
 std::string help_string = " agrep [OPTIONS] <PATTERN> <FILENAME> \n For more Info use option --help \n";
-std::string manual = " SYNOPSIS: agrep [-e] [-k <number>] <PATTERN> <FILENAME \n";
+std::string manual = " SYNOPSIS: agrep [-e] [-k <number>] <PATTERN> <FILENAME> \n";
 
 int main(int argc,const char* argv[]) {
 
