@@ -28,7 +28,7 @@ typedef std::bitset<WORD_SIZE> BitSet;
 
 
 //
-/// \brief Agrep class for approximate string searching. 
+/// \brief Agrep class for approximate string searching.
 /// contains member functions for preprocessing (aka building bit masks)
 /// searching using standard shift-and/or
 /// preprocessing regular expression and using shift-or to search
@@ -47,9 +47,9 @@ public:
     }
 
     /// \brief preprocess pattern
-    /// default is normal pattern. 
-    /// Masks are generated for the pattern. 
-    /// If regex is set to true, the pattern would be parsed and 
+    /// default is normal pattern.
+    /// Masks are generated for the pattern.
+    /// If regex is set to true, the pattern would be parsed and
     /// translated into a thompson nfa.
     /// this is then translated again into a set of bitmasks.
     /// \param pattern pattern to be searched
@@ -63,25 +63,26 @@ public:
     }
 
     /// \brief preprocess pattern
-    /// searchers directly in the file. 
+    /// searchers directly in the file.
     /// \param pattern pattern to be searched
-    /// \param f_name file name to search in 
+    /// \param f_name file name to search in
     /// \errors number of allowed errors. default is 0 in other words exact search
     /// \ regex interpret the string as regex or not. default is false
-    Agrep(std::string pattern, std::string f_name , unsigned errors = 0, bool regex = false){
+    Agrep(std::string pattern, std::string f_name, unsigned errors = 0, bool regex = false)
+    {
         Agrep();
         search_file(pattern, f_name, errors, regex);
 
     }
 
     // copy and assign operators are not needed in this case
-    // all member variables have their own copy/assign constructors 
+    // all member variables have their own copy/assign constructors
 
 
     /// \brief search wrapper for file searching
 
     /// \param pattern pattern to be searched
-    /// \param f_name file name to search in 
+    /// \param f_name file name to search in
     /// \errors number of allowed errors. default is 0 in other words exact search
     /// \ regex interpret the string as regex or not. default is false
     bool search_file(std::string pattern, std::string f_name, unsigned errors = 0, bool regex = true)
@@ -134,12 +135,13 @@ public:
                     // dirty fix
 
                     if (regex)
-                    {   std::cout<< f_name<<": "<< line_num<<":"<<res<<std::endl;
+                    {
+                        std::cout<< f_name<<": "<< line_num<<":"<<res<<std::endl;
                         std::cout<< text <<std::endl;
                         std::cout << "\033[38;5;205m"<<make_empty(text.length(), res)<< "\033[m" <<std::endl;
                     } // end if
                     else
-                    {   
+                    {
                         std::cout<< line_num<<":";
                         std::cout<< text.substr(0, res) << "\033[38;5;205m"<<text.substr(res,pattern_length) << "\033[m"
                                  << text.substr(res+pattern_length, text.length()) <<std::endl;
@@ -155,11 +157,11 @@ public:
 
 
 
-    /// \brief preprocessing function for normal patterns. 
-    /// \param pattern is a string which is to be searched 
+
+private:
+    /// \brief preprocessing function for normal patterns.
+    /// \param pattern is a string which is to be searched
     /// \param errors is the number of allowed errors (in Levenshtein distance)
-    
-    private: 
     void compile_standard(std::string pattern, unsigned errors = 0)
     {
 
@@ -335,7 +337,7 @@ public:
     }// end search
 
 
-    /// search using a translated thompson nfa. 
+    /// search using a translated thompson nfa.
     int search_fsa(std::string text)
     {
         // Rs[0] start already set
@@ -349,7 +351,7 @@ public:
             s_i = masks[c];
 
             // std::cout<<Rs[Rs_size - 1]<<" at text: " <<text[i]<<std::endl;
-            
+
             prevs = Rs;
             Rs[0].set(start);
             apply_epsilon(Rs[0]);
@@ -394,16 +396,17 @@ public:
 
     /// apply epsilon jumps to the whole bit array
     void apply_epsilon(BitSet &bs, unsigned offset = 0)
-    {   
-        for (int l = 0 ; l < 2; ++l){
-        for(int k = 0; k < epsilons.size(); ++k)
+    {
+        for (int l = 0 ; l < 2; ++l)
         {
-            unsigned i = epsilons[k];
-            if(bs.test(i+offset))
+            for(int k = 0; k < epsilons.size(); ++k)
             {
-                bs |= (transition_masks[i]<<offset);
+                unsigned i = epsilons[k];
+                if(bs.test(i+offset))
+                {
+                    bs |= (transition_masks[i]<<offset);
+                }
             }
-        }
 
         }
     }
@@ -414,7 +417,7 @@ public:
         mask_range(pos, 0, 255, to_ones);
     }
 
-    /// make masks for characters from range a to b. 
+    /// make masks for characters from range a to b.
     void mask_range(unsigned pos,unsigned  a, unsigned  b, bool to_ones = true)
     {
         // assert(int(b) > int(a));
@@ -478,12 +481,12 @@ public:
 
     std::vector<BitSet> masks; // mask for normal search
     std::vector<BitSet> transition_masks; // mask for epsilon jumps
-    std::vector<int> epsilons; // epsilon positions 
+    std::vector<int> epsilons; // epsilon positions
     unsigned Rs_size; // number of bit arrays of bitarrays to search
     std::vector<BitSet> Rs; // "bitmatrix" used for approximative search
-    std::vector<BitSet> prevs; // temp variable 
+    std::vector<BitSet> prevs; // temp variable
     unsigned final; // final state fsa
-    unsigned start; // start state fsa. 
+    unsigned start; // start state fsa.
 
 
 
