@@ -1,100 +1,94 @@
 #include <iostream>
 #include "agrep.hpp"
-#include "levenshtein.hpp"
-#include "bit_pattern.hpp"
 #include "FSA.hpp"
 #include "FSAWrapper.hpp"
+#include <boost/program_options.hpp>
+#include <string> 
+#include <iterator>
 //#include "recursive_descent.hpp"
+//#include "levenshtein.hpp"
 
 
-typedef FSA<unsigned short int> FSA16;
+namespace po = boost::program_options;
+
+bool regex = false; 
+unsigned errors = 0; 
+std::string help_string = " agrep [OPTIONS] <PATTERN> <FILENAME> \n For more Info use option --help \n";
+std::string manual = " SYNOPSIS: agrep [-e] [-k <number>] <PATTERN> <FILENAME \n";
+
+int main(int argc,const char* argv[]) {
+
+try{
+po::options_description description("Allowed Options");
+description.add_options()
+("help,h", "quick help")
+("edit,k",po::value<unsigned>(), "edit distance for fuzzy search")
+("expression,e" ,"regular expression mode search");
+po::variables_map vm;
+po::store(po::parse_command_line(argc, argv,description),vm);
+po::notify(vm);
 
 
-int main(int argc, char** argv) {
 
-    std::string text = "accccccccfccccc";
+    if (vm.count("help")){
+        std::cout <<manual; 
+        exit(0);
+    }
 
-// (a|*(bc) causes segfault
-// (|a) segfault
-// "(a|)" throws
+    if (vm.count("edit")){
+        errors = vm["edit"].as<unsigned>() ;
+    }
 
-// first char bug
+    if (vm.count("expression")){
+        regex = true; 
+        }
+}
 
-// look into jumping too much to the end
-// epsilon jumps are not correct
-// modify do concat
-// RecDesc parser("a(c)*(d|f)c");
+catch(po::error& e) {
+        std::cerr << "error: " << e.what() << "\n";
+        std::cerr << help_string;
+        exit(2);
+}
 
-// for (auto i : parser.tokenized_input){
-//     std::cout<< i <<std::endl;
-//     }
-
-//     auto automat = parser.parse();
-//     Agrep a; 
-//     a.search_fsa(automat, text);
-
-// two bug left
-// fix tokenization
-// not correct stuff on fuzzy regex
-Agrep b; 
-if (argc > 2){
-b.search_file(argv[1],argv[2], std::stoi(argv[3]),true);
-
+catch(...) {
+        std::cerr << "Unknown Error" <<std::endl;
+        exit(2);
 }
 
 
+if(argc < 2){
+    std::cerr<< "Error: Invalid Number of Arguments"<<std::endl;
+    std::cerr << help_string <<std::endl;
+    exit(2);
+}
+
+
+if(argc > 5){
+    std::cerr<< "Error: Invalid Number of Arguments"<<std::endl;
+    std::cerr << help_string <<std::endl;
+    exit(2);
+}
+
+std::string pattern = argv[argc-2];
+std::string f_name = argv[argc-1];
+
+Agrep A;
+
+// Agrep A(pattern, f_name, errors, regex ); 
+
+A.search_file(pattern, f_name,errors, regex );
 
 
 
-    // Agrep a; 
+// copy and assignment constructor test. 
+// if uncommented should print results 3 times. 
 
-    // std::string pattern = "bbb";
-    // std::string pattern_2 = "aaa";
-    // std::string text = "cccccccccccccbbbbbaaaaaccccccc";
-    // a.search_fsa(pattern, pattern_2,text);
-  
-    // FSA16 fsa_1(pattern);
-    // FSA16 fsa_2(pattern_2);
-    // FSA16 fsa_31 = fsa_union(fsa_1,fsa_2);
-    // FSA16 fsa_3 = fsa_concat(fsa_1,fsa_31);
+// Agrep B(A);
+// B.search_file(pattern, f_name,errors, regex );
+// Agrep C;
+// C = B; 
+// C.search_file(pattern, f_name,errors, regex );
 
-    
+exit(0);
 
-    // std::ofstream dot("fsa.dot");
-    // fsa_3.as_dot(dot);
-
-
-
-    //BitPattern b(pattern);
-
-    
-    // Agrep a; 
-    // a.search_wild_card(pattern, text, 2);
-    // a.search(pattern, text);
-
-    /*
-    if (argc > 3){
-        //std::cerr << "wrong number of args"<<std::endl;
-
-        a.search_file(argv[1], argv[2], std::strtoul(argv[3],NULL,10));
-
-        //exit(1);
-    }
-
-    else if (argc == 3){
-        a.search_file(argv[1], argv[2]);
-
-    }
-
-    else{
-        std::cerr<<"wrong number of arguments";
-        exit(1);
-    }
-
-
-    */
-
-
-
-    //a.search(pattern, text);
 }

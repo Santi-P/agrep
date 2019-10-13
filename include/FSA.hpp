@@ -7,6 +7,8 @@
 // V7: Hash-Funktion hinzugef�gt
 // V8: Templatisierung
 // TH, 8.7.19
+// modified by SP. 2.10.19
+// made state vector public.. sorry
 
 #pragma once
 #include <iostream>
@@ -195,6 +197,16 @@ public: // Konstruktoren, Schnittstelle
     }
     return n;
   }
+
+  State get_final_state() const
+  {
+    unsigned n = 0;
+    for (State q = 0; q < states.size(); ++q) {
+      if (is_final(q)) return q;
+    }
+  }
+
+
 
 public: // Algebra  
   /// Verkettet *this konstruktiv mit rhs (mittels Epsilon-�berg�ngen)
@@ -415,6 +427,7 @@ private: // Funktionen
   {
     if (no_final_states() == 0 || fsa2.no_final_states() == 0) return;
     auto new_start = new_state();
+    //auto new_start = fsa2.get_final_state();
     auto new_final = new_state();
     auto state_offset = no_states();
 
@@ -466,6 +479,7 @@ private: // Funktionen
   }
 
   /// Destruktive Sternh�lle
+  /// hack this shit
   void do_star_closure()
   {
     auto new_start = new_state();
