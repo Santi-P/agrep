@@ -19,7 +19,7 @@ The only dependencies aside aside from STL is boost/program_options and the FSA 
   - . for wild card  
 - **-k** followed by an integer specifies the edit distance (allowed errors). 
 - **--help** prints out a short synopsis of the arguments.  
-
+** WARNING: This program was only tested on the english alphabet/ standard ascii. Behavior on characters is undefined**
 ## Notes
 According to Wu & Manber, the main advantage of the algorithm stems from the fact, that it is based around a few efficient operations. The trade off of using this approach is that, without further tricks, the maximum
 pattern length is capped to the computer's word size (in my case 64). It is possible it may overflow a on shorter pattern when using regular expression. This is because Epsilon transitions also take up 1 bit.
