@@ -14,10 +14,11 @@
 #include <bitset>
 #include "FSA.hpp"
 #include "FSAWrapper.hpp"
+#define NDEBUG
 #include <cassert>
 #include "recursive_descent.hpp"
 
-
+// m
 const size_t WORD_SIZE = 64;
 const size_t shortmax = std::numeric_limits<unsigned short>::max();
 const size_t MAX_CHAR= std::numeric_limits<unsigned char>::max();
@@ -85,7 +86,7 @@ public:
     /// \param f_name file name to search in
     /// \errors number of allowed errors. default is 0 in other words exact search
     /// \ regex interpret the string as regex or not. default is false
-    bool search_file(std::string pattern, std::string f_name, unsigned errors = 0, bool regex = true)
+    bool search_file(std::string pattern, std::string f_name, unsigned errors = 0, bool regex = true, bool colors = false)
     {
         pattern_length = pattern.length();
 
@@ -106,6 +107,12 @@ public:
         }
 
         std::ifstream file(f_name);
+
+        if(!file)
+        {
+            std::cerr <<"File Error: "<< f_name <<std::endl;
+            exit(4);
+        }
         std::string text;
         int line_num = 0;
 
@@ -116,9 +123,11 @@ public:
             line_num++;
             if (text.length() <1) continue;
 
+
             else
             {
                 int res;
+
                 if (regex)
                 {
                     res = search_fsa(text);
@@ -135,33 +144,52 @@ public:
                     // dirty fix
 
                     if (regex)
+
                     {
                         std::cout<< f_name<<": "<< line_num<<":"<<res<<std::endl;
                         std::cout<< text <<std::endl;
-                        std::cout << "\033[38;5;205m"<<make_empty(text.length(), res)<< "\033[m" <<std::endl;
+
+                        if(colors)
+                        {
+                            std::cout << "\033[38;5;205m"<<make_empty(text.length(), res)<< "\033[m" <<std::endl;
+                        }
+
                     } // end if
+
+
                     else
                     {
                         std::cout<< line_num<<":";
-                        std::cout<< text.substr(0, res) << "\033[38;5;205m"<<text.substr(res,pattern_length) << "\033[m"
-                                 << text.substr(res+pattern_length, text.length()) <<std::endl;
+
+                        if(colors)
+                        {
+                            std::cout<< text.substr(0, res) << "\033[38;5;205m"<<text.substr(res,pattern_length) << "\033[m"
+                                     << text.substr(res+pattern_length, text.length()) <<std::endl;
+                        }
+
+                        else
+                        {
+                            std::cout<< text <<std::endl;
+                        }
+
 
                     }// end else
                 }// end if
             }// end else
         }// end while
 
+        file.close();
         return found;
 
     }// end
 
 
 
-
-private:
     /// \brief preprocessing function for normal patterns.
     /// \param pattern is a string which is to be searched
     /// \param errors is the number of allowed errors (in Levenshtein distance)
+
+private:
     void compile_standard(std::string pattern, unsigned errors = 0)
     {
 
@@ -378,7 +406,6 @@ private:
                 apply_epsilon(Rs[j],j);
 
             }// end for j
-
 
             // std::cout<<Rs[Rs_size - 1]<<" after jumps  " <<std::endl<<std::endl;
             if (Rs[Rs_size - 1].test(final))

@@ -1,5 +1,5 @@
 CXX		  := g++
-CXX_FLAGS :=  -O2 -std=c++17 -lboost_program_options 
+CXX_FLAGS :=  -O2 -std=c++17 -Wall -lboost_program_options 
 
 BIN		:= bin
 SRC		:= src

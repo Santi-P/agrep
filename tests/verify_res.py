@@ -1,5 +1,6 @@
 
 import sys
+from shlex import quote
 
 grep_file_name = sys.argv[1]
 my_file_name = sys.argv[2]
@@ -26,4 +27,7 @@ with open(my_file_name, "r") as gf:
 if (set(my_file_lines) == set(grep_file_lines)):
     print("Test Passed: grep results are equal to agrep results" )
 else:
+    s_1, s_2 = set(my_file_lines), set(grep_file_lines)
+    print(s_1 - s_2)
+    print(s_2 - s_1)
     print("Test failed")
